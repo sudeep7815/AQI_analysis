@@ -49,8 +49,8 @@ ggsave("Air Polutants Trends.pdf",
 ## y axis should be free within its range,
 ##as its not for comparision bw the pollutants free y axis will be helpful to visualise each pollutant trend 
 
-
-###air quality trends for bengaluru
+##assignments
+###2: air quality trends for bengaluru
 aqidf2 %>% 
   filter(city == "Bengaluru") %>%
   group_by(year,pollutant) %>% 
@@ -72,5 +72,77 @@ ggsave("Bengaluru Air Polutants Trends.pdf",
        units = "in",
        width = 10,
        height = 6)
+
+
+##3 co trends for all cities
+
+
+
+
+
+
+
+
+
+
+
+
+
+### 4 Air quality trends for bengaluru , Chennai , Mumbai , Hyderabad
+
+
+aqidf2 %>%
+  filter(city %in% c("Bengaluru", "Chennai", "Mumbai", "Hyderabad")) %>%
+  group_by(year, pollutant, city) %>%
+  summarise(mean_values = mean(values, na.rm = T)) -> metro_trends
+
+metro_trends
+
+metro_trends %>%
+  ggplot(aes(x = year, y = mean_values, color = city)) +
+  geom_line() +
+  facet_wrap(~pollutant, scales = "free_y") +
+  labs(
+    title = "Air Quality Trends: Bengaluru, Chennai, Mumbai, Hyderabad",
+    subtitle = "2015–2020",
+    x = NULL,
+    y = "Pollutant Values",
+    caption = "Source: city_day") +
+  theme_linedraw()->plot4
+
+ggsave("All cities pollutant trend.pdf",
+       plot = plot4,
+       units = "in",
+       width = 10,
+       height = 6)
+
+
+
+
+
+
+
+
+
+
+# Heat map
+aqidf2 %>%
+  filter(pollutant == "co") %>%
+  group_by(week, weekday, month) %>%
+  summarise(meanval = mean(values, na.rm = TRUE)) %>%
+  ggplot(aes(x = week,
+             y = weekday,
+             fill = meanval)) +
+  geom_tile() +
+  facet_wrap(~month, scales = "free_x") +
+# scale_fill_gradient(low = "yellow", high = "red") +
+ scale_fill_gradientn(colours = c("darkgreen", "yellow", "red")) +
+ theme_minimal() +
+ labs(title = "CO heat map",
+       subtitle = "For all cities",
+       x = NULL,
+       y = NULL)
+
+
 
 
