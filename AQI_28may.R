@@ -76,14 +76,28 @@ ggsave("Bengaluru Air Polutants Trends.pdf",
 
 ##3 co trends for all cities
 
+aqidf2%>%
+  filter(pollutant == "co") %>%
+  group_by(year, pollutant, city) %>%
+  summarise(mean_value = mean(values, na.rm = TRUE),groups = 'drop') -> Co_aqi_yearwise
 
-
-
-
-
-
-
-
+# Plot
+Co_aqi_yearwise %>% 
+  ggplot(aes(x = year, y = mean_value, color = city)) +
+  geom_line(size = 1) +
+  facet_wrap(~city, scales = "free_y") +
+  labs(title = "CO Air Pollutants Trend",
+    subtitle = "From 2015–2020",
+    x = NULL,
+    y = "Pollutant Mean Value",
+    caption = "Source: AQI DATA") +
+  theme_linedraw() -> plot3
+# Save the plot
+ggsave("Co_Air_Pollutants_Trend.pdf",
+       plot = plot3,
+       units = "in",
+       width = 15,
+       height = 8)
 
 
 
@@ -92,38 +106,55 @@ ggsave("Bengaluru Air Polutants Trends.pdf",
 
 
 aqidf2 %>%
-  filter(city %in% c("Bengaluru", "Chennai", "Mumbai", "Hyderabad")) %>%
-  group_by(year, pollutant, city) %>%
-  summarise(mean_values = mean(values, na.rm = T)) -> metro_trends
+  filter(city %in% c("Bengaluru","Chennai","Mumbai","Hyderabad")) %>%
+  group_by(year,city, pollutant) %>% 
+  summarise(mean_value = mean(values, na.rm = TRUE)) -> BCMB_aqi_yearwise
 
-metro_trends
-
-metro_trends %>%
-  ggplot(aes(x = year, y = mean_values, color = city)) +
+BCMB_aqi_yearwise %>% 
+  ggplot(aes(x = year, y = mean_value, color = city)) +
   geom_line() +
   facet_wrap(~pollutant, scales = "free_y") +
   labs(
-    title = "Air Quality Trends: Bengaluru, Chennai, Mumbai, Hyderabad",
-    subtitle = "2015–2020",
+    title = " Metro citiesAir Pollutants Trend",
+    subtitle = "From 2015–2020",
     x = NULL,
-    y = "Pollutant Values",
-    caption = "Source: city_day") +
-  theme_linedraw()->plot4
+    y = "Pollutant Mean Value",
+    caption = "Source: AQI DATA") +
+  theme_linedraw() -> plot4
 
-ggsave("All cities pollutant trend.pdf",
+# Save the plot
+ggsave("Metro_Cities_Air_Pollutants_Trend.pdf",
        plot = plot4,
        units = "in",
-       width = 10,
-       height = 6)
+       width = 15,
+       height = 8)
 
 
+#5. pm2.5 trend for Bengaluru for 2015-2020
+aqidf2 %>%
+  filter(pollutant == "pm2_5",city=="Bengaluru",year>=2015 & year <=2020) %>%
+  group_by(year, pollutant, city) %>%
+  summarise(mean_value = mean(Values, na.rm = TRUE), .groups = 'drop') -> pm5_aqi_yearwise
 
-
-
-
-
-
-
+# Plot
+aqidf2 %>% 
+  ggplot(aes(x = year, y = mean_value, color = city)) +
+  geom_line(size = 1) +
+  facet_wrap(~city, scales = "free_y") +
+  labs(
+    title = "pm_5 Air Pollutants Trend",
+    subtitle = "From 2015–2020",
+    x = NULL,
+    y = "Pollutant Mean Value",
+    caption = "Source: AQI DATA"
+  ) +
+  theme_linedraw() -> plot5
+# Save the plot
+ggsave("pm_5_Air_Pollutants_Trend.pdf",
+       plot = plot5,
+       units = "in",
+       width = 15,
+       height=8)
 
 # Heat map
 aqidf2 %>%
